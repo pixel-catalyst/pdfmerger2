@@ -1,101 +1,124 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import PDFMerger from "pdf-merger-js"; // Ensure to install this package
+import { DragDropContext, Droppable, Draggable, DropResult, DraggableProvided } from "react-beautiful-dnd";
+import { Iceberg } from "next/font/google";
+import { BsUpload } from "react-icons/bs";
+import { BiMinus, BiPlus, BiSend } from "react-icons/bi";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [files, setFiles] = useState<File[]>([]);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [numOfColumns, setNumOfColumns] = useState(3);
+  const [heightOfPDF, setHeightOfPDF] = useState(300);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const selectedFiles = Array.from(event.target.files);
+      setFiles(selectedFiles);
+    }
+  };
+
+  const handlePreview = (file: File) => {
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+  };
+
+  const handleMerge = async () => {
+    const merger = new PDFMerger();
+    for (const file of files) {
+      await merger.add(file);
+    }
+    const mergedPdfBlob = await merger.save("output.pdf");
+    const url = "output.pdf";
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "merged.pdf";
+    a.click();
+  };
+
+  const handleOnDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    const reorderedFiles = Array.from(files);
+    const [movedFile] = reorderedFiles.splice(result.source.index, 1);
+    reorderedFiles.splice(result.destination.index, 0, movedFile);
+    setFiles(reorderedFiles);
+  };
+
+
+
+  return (
+    <div className=" flex flex-col items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <header style={{ fontFamily: "monospace", fontSize: "30px", fontWeight: "bold" }}>PDF Merger</header>
+      <main className="flex flex-col gap-8 w-full max-w-4xl items-center sm:items-start transition-all duration-300">
+
+        <div className=" flex flex-row gap-1">
+          <label className=" cursor-pointer bg-gray-400/20 rounded-full px-4 py-2 hover:opacity-80 flex flex-row  " htmlFor="fileuploader">
+            <BsUpload className=" my-auto mr-3 font-bold" />
+            <h1>Upload files</h1>
+          </label>
+          <input id="fileuploader" type="file" accept="application/pdf" multiple onChange={handleFileChange} className="hidden" />
+
+          <div className="w-2"></div>
+
+          <div className=" flex flex-row items-center border-2 border-gray-400/50 pr-4 p-1 rounded-l-full">
+            <button onClick={() => { setNumOfColumns(numOfColumns - 1) }} className=" bg-gray-400/20 rounded-l-full p-2 hover:bg-gray-400/30">
+              <BiMinus />
+            </button>
+            <button onClick={() => { setNumOfColumns(numOfColumns + 1) }} className=" bg-gray-400/20 rounded-r-full p-2 hover:bg-gray-400/30">
+              <BiPlus />
+            </button>
+            <h1 className=" ml-4">{numOfColumns} Columns</h1>
+          </div>
+
+          <div className=" flex flex-row items-center border-2 border-gray-400/50 pl-4 p-1 rounded-r-full">
+            <h1 className=" mr-4">{heightOfPDF} Height</h1>
+            <button onClick={() => { setHeightOfPDF(heightOfPDF - 100) }} className=" bg-gray-400/20 rounded-l-full p-2 hover:bg-gray-400/30">
+              <BiMinus />
+            </button>
+            <button onClick={() => { setHeightOfPDF(heightOfPDF + 100) }} className=" bg-gray-400/20 rounded-r-full p-2 hover:bg-gray-400/30">
+              <BiPlus />
+            </button>
+          </div>
         </div>
+
+
+
+        <div className=" w-full grid grid-cols-2 dark:grid-cols-1 gap-4"></div>
+
+        <DragDropContext onDragEnd={handleOnDragEnd}>
+          <Droppable droppableId="files">
+            {(provided: DraggableProvided) => (
+              <div className={"grid w-full grid-cols-" + numOfColumns + " gap-4"} ref={provided.innerRef} {...provided.droppableProps}>
+                {files.map((file, index) => (
+                  <Draggable key={index} draggableId={`${file.name}-${index}`} index={index}>
+                    {(provided: DraggableProvided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="bg-yellow-200/10 rounded-lg overflow-hidden"
+                      >
+                        <iframe src={URL.createObjectURL(file)} className={"w-full h-[" + heightOfPDF + "px]"}></iframe>
+                        <p className=" text-center w-full font-bold py-3 dark:bg-[#38383d] bg-[#f9f9fa]">{file.name}</p>
+                        {/* <button onClick={() => handlePreview(file)} className={"rounded-md bg-yellow-400/20 py-2 px-4 w-full "}>Preview</button> */}
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+        {files.length > 1 && <button onClick={handleMerge} className={" rounded-full dark:bg-white dark:text-black bg-black text-white px-3 py-2 hover:opacity-80"}>
+          <div className="flex flex-row w-full h-full dark:bg-white">
+            <BiSend className="my-auto mr-2" />
+            <h1>Merge PDFs</h1>
+          </div>
+        </button>}
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
     </div>
   );
 }
