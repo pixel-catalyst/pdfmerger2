@@ -49,6 +49,9 @@ export default function Home() {
 
   return (
     <div className=" flex flex-col items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+
+      <div className=" w-full grid grid-cols-2 grid-cols-4 grid-cols-3 grid-cols-5 grid-cols-6 grid-cols-7 grid-cols-1 dark:grid-cols-1 h-[100px] h-[200px] h-[300px] h-[400px] h-[500px] h-[600px] h-[700px] h-[800px] h-[900px] hidden grid-cols-3 gap-4"></div>
+
       <header style={{ fontFamily: "monospace", fontSize: "30px", fontWeight: "bold" }}>PDF Merger</header>
       <main className="flex flex-col gap-8 w-full max-w-4xl items-center sm:items-start transition-all duration-300">
 
@@ -61,7 +64,9 @@ export default function Home() {
 
           <div className="w-2"></div>
 
-          <div className=" flex flex-row items-center border-2 border-gray-400/50 pr-4 p-1 rounded-l-full">
+          {files.length > 0 &&
+            (<div className="flex flex-row gap-1">
+            <div className=" flex flex-row items-center border-2 border-gray-400/50 pr-4 p-1 rounded-l-full">
             <button onClick={() => { setNumOfColumns(numOfColumns - 1) }} className=" bg-gray-400/20 rounded-l-full p-2 hover:bg-gray-400/30">
               <BiMinus />
             </button>
@@ -81,10 +86,9 @@ export default function Home() {
             </button>
           </div>
         </div>
-
-
-
-        <div className=" w-full grid grid-cols-2 dark:grid-cols-1 gap-4"></div>
+            )
+          }
+        </div>
 
         <DragDropContext onDragEnd={handleOnDragEnd}>
           <Droppable droppableId="files">
