@@ -1,15 +1,15 @@
 "use client"
 import React, { useState } from "react";
 import PDFMerger from "pdf-merger-js";
-import { BiFile, BiFolder, BiPlus, BiSend, BiUpload } from "react-icons/bi";
-import { Iceberg } from "next/font/google";
+import { BiCodeBlock, BiFile, BiFolder, BiLogoGithub, BiPlus, BiSend, BiStreetView, BiUpload } from "react-icons/bi";
+import { BsFillEyeFill } from "react-icons/bs";
+import { FaEye, FaInfo, FaShoppingBasket } from "react-icons/fa";
+import { IoHelp } from "react-icons/io5";
+import { IoMdHelp } from "react-icons/io";
 
 const Splitter = () => {
     const [file, setFile] = useState<File | null>(null);
     const [pageRanges, setPageRanges] = useState<string>("");
-    const font = Iceberg({
-        weight: "400"
-    })
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
@@ -34,9 +34,29 @@ const Splitter = () => {
     };
 
     return (
-        <div className=" flex flex-col items-center justify-items-center max-w-4xl mx-auto w-full h-full min-h-screen p-8 pb-20 gap-8 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+        <div className="  flex flex-col items-center justify-items-center max-w-4xl mx-auto w-full h-full min-h-screen p-8 pb-20 gap-8 sm:p-20 font-[family-name:var(--font-geist-sans)]">
 
-            <h1 className={font.className}>PDF Splitter</h1>
+            <h1 style={{ fontFamily: "iceberg" }} className=" text-3xl text-bold"><span className="text-cyan-400 cursor-pointer hover:text-red-400 duration-1000 transition-all" onClick={() => { window.open("https://snippetsofpassion.vercel.app") }}>Ashwin's</span> PDF Splitter</h1>
+            <div className=" flex flex-row gap-1 ">
+                <button onClick={() => { window.open("https://ashdocs.vercel.app") }} className={" -mt-4 rounded-l-full dark:bg-cyan-400/30 bg-black px-3 py-2 hover:bg-cyan-400/50 transition-all duration-500 hover:shadow-cyan-400 hover:shadow-sm"}>
+                    <div className="flex flex-row w-full h-full ">
+                        <IoMdHelp className="my-auto mr-1 scale-110" />
+                        <h1>Help</h1>
+                    </div>
+                </button>
+                <button onClick={() => { window.location.href = "./" }} className={" -mt-4  dark:bg-white/30 bg-black px-3 py-2 hover:bg-white/50 transition-all duration-500 hover:shadow-white hover:shadow-sm"}>
+                    <div className="flex flex-row w-full h-full ">
+                        {/* <IoMdHelp className="my-auto mr-1 scale-110" /> */}
+                        <h1>Also Try Merger</h1>
+                    </div>
+                </button>
+                <button onClick={() => { window.open("https://snippetsofpassion.vercel.app") }} className={" -mt-4 rounded-r-full dark:bg-red-400/30 bg-black px-3 py-2 hover:bg-red-400/50 transition-all duration-500 hover:shadow-red-400 hover:shadow-sm"}>
+                    <div className="flex flex-row w-full h-full">
+                        <FaShoppingBasket className="my-auto mr-2 scale-110" />
+                        <h1>More Apps</h1>
+                    </div>
+                </button>
+            </div>
             <label className=" cursor-pointer bg-gray-400/20 rounded-full px-4 py-2 hover:opacity-80 flex flex-row  " htmlFor="fileuploader">
                 <BiFolder className=" my-auto mr-3 font-bold rounded-full scale-110" />
                 <h1> {file == null ? "Select File" : file.name}</h1>

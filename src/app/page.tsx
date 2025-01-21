@@ -6,6 +6,8 @@ import { Iceberg } from "next/font/google";
 import { BsPlus, BsUpload } from "react-icons/bs";
 import { BiCross, BiMinus, BiPlus, BiSend, BiTrash, BiX } from "react-icons/bi";
 import { parsePageRanges } from "./splitPdf";
+import { IoMdHelp } from "react-icons/io";
+import { FaShoppingBasket } from "react-icons/fa";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
@@ -63,7 +65,27 @@ export default function Home() {
     <div className=" flex flex-col items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <div className=" w-full grid grid-cols-2 grid-cols-4 grid-cols-3 grid-cols-5 grid-cols-6 grid-cols-7 grid-cols-1 dark:grid-cols-1 h-[100px] h-[200px] h-[300px] h-[400px] h-[500px] h-[600px] h-[700px] h-[800px] h-[900px] hidden grid-cols-3 gap-4"></div>
 
-      <header style={{ fontFamily: "monospace", fontSize: "30px", fontWeight: "bold" }}>PDF Merger</header>
+      <h1 style={{ fontFamily: "iceberg" }} className=" text-3xl text-bold"><span className="text-cyan-400 cursor-pointer hover:text-red-400 duration-1000 transition-all" onClick={() => { window.open("https://snippetsofpassion.vercel.app") }}>Ashwin's</span> PDF Merger</h1>
+      <div className=" flex flex-row gap-1 -mt-8">
+        <button onClick={() => { window.open("https://ashdocs.vercel.app") }} className={" -mt-4 rounded-l-full dark:bg-cyan-400/30 bg-black px-3 py-2 hover:bg-cyan-400/50 transition-all duration-500 hover:shadow-cyan-400 hover:shadow-sm"}>
+          <div className="flex flex-row w-full h-full ">
+            <IoMdHelp className="my-auto mr-1 scale-110" />
+            <h1>Help</h1>
+          </div>
+        </button>
+        <button onClick={() => { window.location.href = "./splitter" }} className={" -mt-4  dark:bg-white/30 bg-black px-3 py-2 hover:bg-white/50 transition-all duration-500 hover:shadow-white hover:shadow-sm"}>
+          <div className="flex flex-row w-full h-full ">
+            {/* <IoMdHelp className="my-auto mr-1 scale-110" /> */}
+            <h1>Also Try Splitter</h1>
+          </div>
+        </button>
+        <button onClick={() => { window.open("https://snippetsofpassion.vercel.app") }} className={" -mt-4 rounded-r-full dark:bg-red-400/30 bg-black px-3 py-2 hover:bg-red-400/50 transition-all duration-500 hover:shadow-red-400 hover:shadow-sm"}>
+          <div className="flex flex-row w-full h-full">
+            <FaShoppingBasket className="my-auto mr-2 scale-110" />
+            <h1>More Apps</h1>
+          </div>
+        </button>
+      </div>
       <main className="flex flex-col gap-8 w-full max-w-4xl items-center sm:items-start transition-all duration-300">
 
         <div className=" flex flex-row gap-1">
