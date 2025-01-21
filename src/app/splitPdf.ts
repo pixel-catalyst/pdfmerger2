@@ -20,6 +20,10 @@ const parsePageRanges = (pageRanges: string) => {
 
     ranges.forEach(range => {
         const [start, end] = range.split('-').map(Number);
+        if (isNaN(start) || (end !== undefined && isNaN(end))) {
+            console.error(`Invalid page range: ${range}`);
+            return; // Skip invalid ranges
+        }
         if (end) {
             for (let i = start; i <= end; i++) {
                 pages.add(i);
@@ -32,4 +36,4 @@ const parsePageRanges = (pageRanges: string) => {
     return Array.from(pages);
 };
 
-export { parsePageRanges }
+export { parsePageRanges };
