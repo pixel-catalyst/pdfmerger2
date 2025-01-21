@@ -28,7 +28,7 @@ const Splitter = () => {
         for (const [index, range] of ranges.entries()) {
             console.log(file, range, index)
             await merger.add(file, range)
-            await merger.save("output_" + index + 1)
+            await merger.save("output_" + (index + 1))
             await merger.reset()
         }
     };
