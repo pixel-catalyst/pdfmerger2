@@ -3,8 +3,8 @@ import { useState } from "react";
 import PDFMerger from "pdf-merger-js"; // Ensure to install this package
 import { DragDropContext, Droppable, Draggable, DropResult, DraggableProvided } from "react-beautiful-dnd";
 import { Iceberg } from "next/font/google";
-import { BsUpload } from "react-icons/bs";
-import { BiMinus, BiPlus, BiSend, BiTrash } from "react-icons/bi";
+import { BsPlus, BsUpload } from "react-icons/bs";
+import { BiCross, BiMinus, BiPlus, BiSend, BiTrash, BiX } from "react-icons/bi";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
@@ -45,7 +45,10 @@ export default function Home() {
     setFiles(reorderedFiles);
   };
 
-
+  const handleRemoveFile = (index: number) => {
+    const updatedFiles = files.filter((_, i) => i !== index);
+    setFiles(updatedFiles);
+  };
 
   return (
     <div className=" flex flex-col items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -57,15 +60,15 @@ export default function Home() {
 
         <div className=" flex flex-row gap-1">
           <label className=" cursor-pointer bg-gray-400/20 rounded-full px-4 py-2 hover:opacity-80 flex flex-row  " htmlFor="fileuploader">
-            <BsUpload className=" my-auto mr-3 font-bold" />
-            <h1>Upload files</h1>
+            <BiPlus className=" my-auto mr-3 font-bold bg-white text-black rounded-full scale-110" />
+            <h1>Add Files</h1>
           </label>
           <input id="fileuploader" type="file" accept="application/pdf" multiple onChange={handleFileChange} className="hidden" />
 
           <div className="w-2"></div>
 
           {
-            files.length > 2 &&
+            files.length >= 2 &&
             <button onClick={() => { setFiles([]) }} className=" bg-red-400/20 px-3 rounded-full hover:opacity-80">
               <BiTrash />
             </button>
@@ -110,10 +113,13 @@ export default function Home() {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className="bg-yellow-200/10 rounded-lg overflow-hidden"
+                        className="dark:bg-[#38383d] bg-[#f9f9fa] rounded-lg overflow-hidden"
                       >
                         <iframe src={URL.createObjectURL(file)} className={"w-full h-[" + heightOfPDF + "px]"}></iframe>
-                        <p className=" text-center w-full font-bold py-3 dark:bg-[#38383d] bg-[#f9f9fa]">{file.name}</p>
+                        <div className=" flex-row flex justify-between px-5  text-left w-full font-bold py-3 dark:bg-[#38383d] bg-[#f9f9fa]">
+                          <h1>{file.name.length > 100 ? file.name.substring(0, 23)+"..." : file.name}</h1>
+                          <button onClick={() => handleRemoveFile(index)} className=" h-fit bg-red-400/20 rounded-full p-2 hover:opacity-80"><BiX /></button>
+                        </div>
                         {/* <button onClick={() => handlePreview(file)} className={"rounded-md bg-yellow-400/20 py-2 px-4 w-full "}>Preview</button> */}
                       </div>
                     )}
