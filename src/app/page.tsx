@@ -5,36 +5,46 @@ import { DragDropContext, Droppable, Draggable, DropResult, DraggableProvided } 
 import { Iceberg } from "next/font/google";
 import { BsPlus, BsUpload } from "react-icons/bs";
 import { BiCross, BiMinus, BiPlus, BiSend, BiTrash, BiX } from "react-icons/bi";
+import { parsePageRanges } from "./splitPdf";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [numOfColumns, setNumOfColumns] = useState(3);
   const [heightOfPDF, setHeightOfPDF] = useState(300);
+  const [pageRanges, setPageRanges] = useState<string[]>([]);
+
+  const handleInputChange = (index: number, value: string) => {
+    const newPageRanges = [...pageRanges];
+    newPageRanges[index] = value; // Update the specific index with the new value
+    setPageRanges(newPageRanges); // Set the new state
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const selectedFiles = Array.from(event.target.files);
       setFiles(files.concat(selectedFiles));
+      setPageRanges(prev => [...prev, ...Array(selectedFiles.length).fill("")]);
     }
-  };
-
-  const handlePreview = (file: File) => {
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
   };
 
   const handleMerge = async () => {
     const merger = new PDFMerger();
-    for (const file of files) {
-      await merger.add(file);
+
+    // Use a for...of loop to handle async operations with await
+    for (const [index, file] of files.entries()) {
+      if (pageRanges[index] && pageRanges[index].trim() !== "") {
+        await merger.add(file, parsePageRanges(pageRanges[index]));
+        console.log(`${file.name} :: ${pageRanges[index]}`);
+      } else {
+        await merger.add(file);
+        console.log(`${file.name} empty file`);
+      }
     }
-    const mergedPdfBlob = await merger.save("output.pdf");
-    const url = "output.pdf";
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "merged.pdf";
-    a.click();
+
+    // Save the merged PDF
+    await merger.save("output.pdf");
+    console.log("PDF merged successfully.");
   };
 
   const handleOnDragEnd = (result: DropResult) => {
@@ -78,25 +88,25 @@ export default function Home() {
           {files.length > 0 &&
             (<div className="flex flex-row gap-1">
             <div className=" flex flex-row items-center border-2 border-gray-400/50 pr-4 p-1 rounded-l-full">
-            <button onClick={() => { setNumOfColumns(numOfColumns - 1) }} className=" bg-gray-400/20 rounded-l-full p-2 hover:bg-gray-400/30">
-              <BiMinus />
-            </button>
-            <button onClick={() => { setNumOfColumns(numOfColumns + 1) }} className=" bg-gray-400/20 rounded-r-full p-2 hover:bg-gray-400/30">
-              <BiPlus />
-            </button>
-            <h1 className=" ml-4">{numOfColumns} Columns</h1>
-          </div>
-
-          <div className=" flex flex-row items-center border-2 border-gray-400/50 pl-4 p-1 rounded-r-full">
-            <h1 className=" mr-4">{heightOfPDF} Height</h1>
-            <button onClick={() => { setHeightOfPDF(heightOfPDF - 100) }} className=" bg-gray-400/20 rounded-l-full p-2 hover:bg-gray-400/30">
-              <BiMinus />
-            </button>
-            <button onClick={() => { setHeightOfPDF(heightOfPDF + 100) }} className=" bg-gray-400/20 rounded-r-full p-2 hover:bg-gray-400/30">
-              <BiPlus />
-            </button>
+              <button onClick={() => { setNumOfColumns(numOfColumns - 1) }} className=" bg-gray-400/20 rounded-l-full p-2 hover:bg-gray-400/30">
+                <BiMinus />
+              </button>
+              <button onClick={() => { setNumOfColumns(numOfColumns + 1) }} className=" bg-gray-400/20 rounded-r-full p-2 hover:bg-gray-400/30">
+                <BiPlus />
+              </button>
+              <h1 className=" ml-4">{numOfColumns} Columns</h1>
             </div>
-        </div>
+
+            <div className=" flex flex-row items-center border-2 border-gray-400/50 pl-4 p-1 rounded-r-full">
+              <h1 className=" mr-4">{heightOfPDF} Height</h1>
+              <button onClick={() => { setHeightOfPDF(heightOfPDF - 100) }} className=" bg-gray-400/20 rounded-l-full p-2 hover:bg-gray-400/30">
+                <BiMinus />
+              </button>
+              <button onClick={() => { setHeightOfPDF(heightOfPDF + 100) }} className=" bg-gray-400/20 rounded-r-full p-2 hover:bg-gray-400/30">
+                <BiPlus />
+              </button>
+            </div>
+          </div>
           )
 
           }
@@ -113,13 +123,15 @@ export default function Home() {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className="dark:bg-[#38383d] bg-[#f9f9fa] rounded-lg overflow-hidden"
+                        className="dark:bg-[#38383d] bg-[#f9f9fa] rounded-2xl overflow-hidden"
                       >
                         <iframe src={URL.createObjectURL(file)} className={"w-full h-[" + heightOfPDF + "px]"}></iframe>
-                        <div className=" flex-row flex justify-between px-5  text-left w-full font-bold py-3 dark:bg-[#38383d] bg-[#f9f9fa]">
-                          <h1>{file.name.length > 100 ? file.name.substring(0, 23)+"..." : file.name}</h1>
+                        <div className=" flex-row flex justify-between items-center px-5  text-left w-full font-bold py-3 dark:bg-[#38383d] bg-[#f9f9fa]">
+                          <h1>{file.name.length > 100 ? file.name.substring(0, 23) + "..." : file.name}</h1>
                           <button onClick={() => handleRemoveFile(index)} className=" h-fit bg-red-400/20 rounded-full p-2 hover:opacity-80"><BiX /></button>
                         </div>
+
+                        <input onChange={(e) => handleInputChange(index, e.target.value)} value={pageRanges[index]} placeholder="Pages { eg: 1-4, 5, 6... }" className="dark:bg-[#38383d] bg-[#f9f9fa] px-5 w-full py-2 "></input>
                         {/* <button onClick={() => handlePreview(file)} className={"rounded-md bg-yellow-400/20 py-2 px-4 w-full "}>Preview</button> */}
                       </div>
                     )}
