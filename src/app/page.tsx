@@ -4,7 +4,7 @@ import PDFMerger from "pdf-merger-js"; // Ensure to install this package
 import { DragDropContext, Droppable, Draggable, DropResult, DraggableProvided } from "react-beautiful-dnd";
 import { Iceberg } from "next/font/google";
 import { BsUpload } from "react-icons/bs";
-import { BiMinus, BiPlus, BiSend } from "react-icons/bi";
+import { BiMinus, BiPlus, BiSend, BiTrash } from "react-icons/bi";
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
@@ -15,7 +15,7 @@ export default function Home() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const selectedFiles = Array.from(event.target.files);
-      setFiles(selectedFiles);
+      setFiles(files.concat(selectedFiles));
     }
   };
 
@@ -64,6 +64,14 @@ export default function Home() {
 
           <div className="w-2"></div>
 
+          {
+            files.length > 2 &&
+            <button onClick={() => { setFiles([]) }} className=" bg-red-400/20 px-3 rounded-full hover:opacity-80">
+              <BiTrash />
+            </button>
+          }
+          <div className="w-2"></div>
+
           {files.length > 0 &&
             (<div className="flex flex-row gap-1">
             <div className=" flex flex-row items-center border-2 border-gray-400/50 pr-4 p-1 rounded-l-full">
@@ -84,9 +92,10 @@ export default function Home() {
             <button onClick={() => { setHeightOfPDF(heightOfPDF + 100) }} className=" bg-gray-400/20 rounded-r-full p-2 hover:bg-gray-400/30">
               <BiPlus />
             </button>
-          </div>
+            </div>
         </div>
-            )
+          )
+
           }
         </div>
 
