@@ -19,7 +19,7 @@ const iceberg = Iceberg({ // Add Iceberg font with weight
 });
 
 export const metadata: Metadata = {
-  title: "Ashwin's PDF Merger",
+  title: "Ashwinz PDF",
   description: "Merges multiple or Split single PDF to multiple",
 };
 
