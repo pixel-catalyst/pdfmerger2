@@ -1,6 +1,5 @@
 # PDF Merger
-
-By Ashwin
+[Click for live preview](https://ashwinz-pdf.vercel.app)
 
 This is a NextJS based project that stands for merging PDFs. 
 
@@ -18,3 +17,8 @@ This is a NextJS based project that stands for merging PDFs.
 Make sure to install the necessary packages:
 ```bash
 npm install pdf-merger-js react-beautiful-dnd
+```
+
+## Planned Features
+- Implement ShadCN UI in it
+- Instead of two completely separate pages, bring them up in a single with a switch button
