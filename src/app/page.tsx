@@ -1,22 +1,21 @@
 "use client";
 import {useState} from "react";
+import {useRouter} from "next/navigation";
 import PDFMerger from "pdf-merger-js"; // Ensure to install this package
 import {DragDropContext, Droppable, Draggable, DropResult, DraggableProvided} from "react-beautiful-dnd";
-import {Iceberg} from "next/font/google";
-import {BsPlus, BsUpload} from "react-icons/bs";
-import {BiCross, BiMinus, BiPlus, BiSend, BiTrash, BiX} from "react-icons/bi";
+import {BiMinus, BiPlus, BiSend, BiTrash, BiX} from "react-icons/bi";
 import {parsePageRanges} from "./splitPdf";
 import {IoMdHelp} from "react-icons/io";
 import {FaShoppingBasket} from "react-icons/fa";
 
 export default function Home() {
+    const router = useRouter();
     const [files, setFiles] = useState<File[]>([]);
     const [numOfColumns, setNumOfColumns] = useState(3);
     const [heightOfPDF, setHeightOfPDF] = useState(300);
     const [pageRanges, setPageRanges] = useState<string[]>([]);
 
-    if (window.confirm("We are moving to https://unidoc.vercel.app/"))
-        window.open("https://unidoc.vercel.app")
+    router.push("https://unidoc.vercel.app");
 
     const handleInputChange = (index: number, value: string) => {
         const newPageRanges = [...pageRanges];
