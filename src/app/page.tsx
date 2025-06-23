@@ -15,7 +15,7 @@ export default function Home() {
     const [heightOfPDF, setHeightOfPDF] = useState(300);
     const [pageRanges, setPageRanges] = useState<string[]>([]);
 
-    if (confirm("We are moving to https://unidoc.vercel.app/"))
+    if (window.confirm("We are moving to https://unidoc.vercel.app/"))
         window.open("https://unidoc.vercel.app")
 
     const handleInputChange = (index: number, value: string) => {
